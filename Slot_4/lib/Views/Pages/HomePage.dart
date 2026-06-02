@@ -1,43 +1,41 @@
 import 'package:flutter/material.dart';
-import '../Widgets/ProductWidget.dart';
 
-class HomePage extends StatelessWidget {
+import '../../Entity/Product.dart';
+import '../../Repository/ProductDAO.dart';
+import '../Widgets/ProductList.dart';
+import 'ProductDetailPage.dart';
+
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final ProductDAO _productDAO = ProductDAO();
+  late List<Product> _products;
+
+  @override
+  void initState() {
+    super.initState();
+    _products = _productDAO.getAll();
+  }
+
+  void _openProductDetail(Product product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailPage(product: product),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-
-        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
-
-        title: const Text("Home Page"),
-        centerTitle: true,
-
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
-        ],
-      ),
-
-      body: const ProductWidget(),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: Colors.blueAccent,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: "Detail",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.info), label: "About"),
-        ],
-      ),
+    return ProductList(
+      products: _products,
+      onProductTap: _openProductDetail,
     );
   }
 }
